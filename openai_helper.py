@@ -6,14 +6,19 @@ import json
 import base64
 import random
 import logging
-from openai import OpenAI
+import os
+import openai
+import logging
+import json
+import base64
+import random
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Initialize OpenAI client
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
+openai.api_key = OPENAI_API_KEY
 
 # The newest OpenAI model is "gpt-4o" which was released May 13, 2024.
 # Do not change this unless explicitly requested by the user

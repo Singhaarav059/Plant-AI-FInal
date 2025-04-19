@@ -23,16 +23,15 @@ logging.basicConfig(level=logging.DEBUG)
 class Base(DeclarativeBase):
     pass
 
-# Initialize database
-db = SQLAlchemy(model_class=Base)
+from flask import Flask
+import os
+from models import db
 
-# Create the Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev_secret_key")
 
 # Configure the database
 database_url = os.environ.get("DATABASE_URL", "sqlite:///plantdisease.db")
-# Fix for Render PostgreSQL URLs
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
@@ -41,8 +40,11 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_pre_ping": True,
 }
 
-# Initialize the database with the app
 db.init_app(app)
+
+with app.app_context():
+    import models
+    db.create_all()
 
 # Import models after db initialization (but before create_all)
 # Moved import here to avoid circular import
@@ -60,7 +62,12 @@ with app.app_context():
 forum_storage = {'posts': [], 'comments': {}}
 
 # Load ML model
+# Removed Gemini API configuration to revert to previous working state
+
+import os
 from ml_model import load_model, preprocess_image, predict_disease
+
+# Removed genai import and configuration to revert to previous working state
 
 # Create all database tables
 with app.app_context():
@@ -114,7 +121,7 @@ def detect_disease():
         
         # Process the image for prediction
         try:
-            # Preprocess image and make prediction with OpenAI Vision
+            # Preprocess image and make prediction with Gemini API
             # Pass user's language preference to get response in the right language
             processed_img = preprocess_image(img_data)
             disease_name, confidence, severity, description, treatment = predict_disease(processed_img, lang)
@@ -165,6 +172,8 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         
+        from models import User
+        
         # Check if username or email already exists
         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
         if existing_user:
@@ -200,6 +209,8 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         
+        from models import User
+        
         user = User.query.filter_by(username=username).first()
         
         if user and check_password_hash(user.password_hash, password):
@@ -218,6 +229,8 @@ def logout():
     session.pop('user_id', None)
     session.pop('username', None)
     return redirect(url_for('index'))
+
+from models import Post
 
 @app.route('/forum')
 def forum():
@@ -349,6 +362,8 @@ def chatbot_api():
         'status': 'success',
         'message': response
     })
+
+from models import DiseaseDetection
 
 @app.route('/history')
 def history():
