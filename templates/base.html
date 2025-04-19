@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ translations.site_name }} - {{ translations.site_description }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='svg/logo.svg') }}" alt="Logo" width="30" height="30" class="me-2">
+                {{ translations.site_name }}
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">{{ translations.home }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('forum') }}">{{ translations.forum }}</a>
+                    </li>
+                    {% if 'user_id' in session %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('history') }}">{{ translations.history }}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="d-flex">
+                    <div class="dropdown me-3 language-selector">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ translations.language }}
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            {% for code, name in languages.items() %}
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', lang=code) }}">{{ name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="d-flex">
+                        {% if 'user_id' in session %}
+                        <span class="navbar-text me-3">
+                            {{ session.username }}
+                        </span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">{{ translations.logout }}</a>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light me-2">{{ translations.login }}</a>
+                        <a href="{{ url_for('register') }}" class="btn btn-primary">{{ translations.register }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>{{ translations.site_name }}</h5>
+                    <p>{{ translations.site_description }}</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>{{ translations.language }}</h5>
+                    <ul class="list-unstyled">
+                        {% for code, name in languages.items() %}
+                        <li><a href="{{ url_for('set_language', lang=code) }}" class="text-decoration-none">{{ name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>{{ translations.site_name }}</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}" class="text-decoration-none">{{ translations.home }}</a></li>
+                        <li><a href="{{ url_for('forum') }}" class="text-decoration-none">{{ translations.forum }}</a></li>
+                        {% if 'user_id' in session %}
+                        <li><a href="{{ url_for('history') }}" class="text-decoration-none">{{ translations.history }}</a></li>
+                        <li><a href="{{ url_for('logout') }}" class="text-decoration-none">{{ translations.logout }}</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('login') }}" class="text-decoration-none">{{ translations.login }}</a></li>
+                        <li><a href="{{ url_for('register') }}" class="text-decoration-none">{{ translations.register }}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p>&copy; 2023 {{ translations.site_name }}. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- Page specific scripts -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1>{{ translations.forum_title }}</h1>
+        <p class="lead">{{ translations.forum_subtitle }}</p>
+    </div>
+    
+    <!-- Create New Post Section -->
+    <div class="col-md-8 mb-4">
+        {% if 'user_id' in session %}
+        <button id="new-post-btn" class="btn btn-primary mb-3" data-show-text="{{ translations.new_post }}" data-hide-text="{{ translations.cancel }}">
+            <i class="fas fa-plus-circle me-2"></i>{{ translations.new_post }}
+        </button>
+        
+        <div id="new-post-form" style="display: none;">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ translations.new_post }}</h5>
+                    <form id="post-form" action="{{ url_for('create_post') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="post-title" class="form-label">{{ translations.post_title }}</label>
+                            <input type="text" class="form-control" id="post-title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="post-content" class="form-label">{{ translations.post_content }}</label>
+                            <textarea class="form-control" id="post-content" name="content" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">{{ translations.submit_post }}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <a href="{{ url_for('login') }}" class="alert-link">{{ translations.login }}</a> or 
+            <a href="{{ url_for('register') }}" class="alert-link">{{ translations.register }}</a> 
+            to create posts and participate in discussions.
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Recent Discussions Section -->
+    <div class="col-12 mt-4">
+        <h2>{{ translations.recent_discussions }}</h2>
+        
+        {% if posts %}
+        <div class="row">
+            {% for post in posts %}
+            <div class="col-md-6 mb-4">
+                <div class="card forum-post h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <p class="card-text">{{ post.content }}</p>
+                        <div class="post-meta d-flex justify-content-between align-items-center">
+                            <span class="text-muted">{{ translations.posted_by }} {{ post.author.username }}</span>
+                            <small class="text-muted">{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <button class="btn btn-sm btn-outline-primary toggle-comments" data-post-id="{{ post.id }}" data-show-text="{{ translations.view_comments }}" data-hide-text="{{ translations.hide_comments }}">
+                            {{ translations.view_comments }} ({{ post.comments.count() }})
+                        </button>
+                        
+                        <!-- Comments Section -->
+                        <div id="comments-{{ post.id }}" class="mt-3" style="display: none;">
+                            <hr>
+                            <h6>{{ translations.comments }}</h6>
+                            
+                            <div class="comment-section">
+                                {% if post.comments.count() > 0 %}
+                                {% for comment in post.comments %}
+                                <div class="card mb-2">
+                                    <div class="card-body py-2">
+                                        <p class="card-text">{{ comment.content }}</p>
+                                        <p class="card-text"><small class="text-muted">{{ translations.posted_by }} {{ comment.author.username }} on {{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</small></p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                <p class="text-muted">{{ translations.no_comments }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Add Comment Form -->
+                            {% if 'user_id' in session %}
+                            <form class="comment-form mt-3" action="{{ url_for('add_comment', post_id=post.id) }}" method="POST">
+                                <div class="input-group">
+                                    <textarea class="form-control" name="content" placeholder="{{ translations.comment_placeholder }}" required rows="2"></textarea>
+                                    <button class="btn btn-primary" type="submit">{{ translations.submit_comment }}</button>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-secondary">
+            <i class="fas fa-comments me-2"></i>{{ translations.no_posts }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/forum.js') }}"></script>
+{% endblock %}

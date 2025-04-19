@@ -1,0 +1,173 @@
+/* Custom styles for KrishiSahayak - Plant Disease Detection Website */
+
+/* General utility classes */
+.min-vh-50 {
+    min-height: 50vh;
+}
+
+.severity-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.severity-low {
+    background-color: #198754; /* Bootstrap success color */
+}
+
+.severity-medium {
+    background-color: #ffc107; /* Bootstrap warning color */
+}
+
+.severity-high {
+    background-color: #dc3545; /* Bootstrap danger color */
+}
+
+/* Image upload area */
+.upload-area {
+    border: 2px dashed var(--bs-secondary);
+    border-radius: 5px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover, .upload-area.dragover {
+    border-color: var(--bs-primary);
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--bs-secondary);
+}
+
+.btn-action {
+    min-width: 150px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Preview image container */
+.preview-container {
+    max-width: 100%;
+    max-height: 300px;
+    margin: 1rem auto;
+    overflow: hidden;
+    display: none;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+/* Disease result styling */
+.disease-result {
+    background-color: rgba(33, 37, 41, 0.03);
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+
+.result-image {
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.confidence-bar {
+    height: 10px;
+    border-radius: 5px;
+}
+
+/* Forum styles */
+.forum-post {
+    transition: transform 0.2s ease;
+}
+
+.forum-post:hover {
+    transform: translateY(-3px);
+}
+
+.post-meta {
+    font-size: 0.85rem;
+}
+
+.comment-section {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Chatbot styles */
+.chat-container {
+    height: 400px;
+    overflow-y: auto;
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 5px;
+}
+
+.chat-message {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    max-width: 80%;
+}
+
+.user-message {
+    background-color: rgba(13, 110, 253, 0.1);
+    margin-left: auto;
+    border-top-right-radius: 0;
+}
+
+.bot-message {
+    background-color: rgba(33, 37, 41, 0.05);
+    margin-right: auto;
+    border-top-left-radius: 0;
+}
+
+/* Language selector */
+.language-selector .dropdown-item {
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .upload-area {
+        padding: 1rem;
+    }
+    
+    .disease-result {
+        padding: 1rem;
+    }
+    
+    .chat-message {
+        max-width: 90%;
+    }
+}
+
+/* History page */
+.history-card {
+    transition: transform 0.2s ease;
+}
+
+.history-card:hover {
+    transform: translateY(-3px);
+}
+
+.history-image {
+    max-height: 150px;
+    object-fit: cover;
+}
+
+/* Footer */
+.footer {
+    margin-top: 3rem;
+    padding: 2rem 0;
+    background-color: rgba(33, 37, 41, 0.03);
+}

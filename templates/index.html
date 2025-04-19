@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mb-5">
+    <div class="col-md-10 text-center">
+        <h1 class="display-4 mb-3">{{ translations.welcome_message }}</h1>
+        <p class="lead mb-5">{{ translations.subtitle }}</p>
+        
+        <!-- Image Upload Section -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form id="upload-form" action="{{ url_for('detect_disease') }}" method="POST" enctype="multipart/form-data">
+                    <div class="upload-area" id="upload-area">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <p>{{ translations.upload_instruction }}</p>
+                        <input type="file" id="plant-image" name="plant_image" class="d-none" accept=".jpg,.jpeg,.png">
+                        
+                        <div class="d-flex justify-content-center gap-3 mb-3">
+                            <button type="button" class="btn btn-outline-primary btn-action" onclick="document.getElementById('plant-image').click()">
+                                <i class="fas fa-image me-2"></i>{{ translations.upload_button }}
+                            </button>
+                            
+                            <button type="submit" class="btn btn-success btn-action" disabled>
+                                <i class="fas fa-search me-2"></i>{{ translations.disease_detected }}
+                            </button>
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div id="preview-container" class="preview-container">
+                            <img id="preview-image" class="preview-image" src="#" alt="Preview">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mt-5">
+    <div class="col-12 text-center mb-4">
+        <h2>{{ translations.features_heading }}</h2>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-search-plus fa-3x mb-3 text-primary"></i>
+                <h5 class="card-title">{{ translations.feature_1_title }}</h5>
+                <p class="card-text">{{ translations.feature_1_desc }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-prescription fa-3x mb-3 text-success"></i>
+                <h5 class="card-title">{{ translations.feature_2_title }}</h5>
+                <p class="card-text">{{ translations.feature_2_desc }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x mb-3 text-info"></i>
+                <h5 class="card-title">{{ translations.feature_3_title }}</h5>
+                <p class="card-text">{{ translations.feature_3_desc }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-book-medical fa-3x mb-3 text-warning"></i>
+                <h5 class="card-title">{{ translations.feature_4_title }}</h5>
+                <p class="card-text">{{ translations.feature_4_desc }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chatbot Section -->
+<div class="row mt-5">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ translations.chatbot_title }}</h5>
+            </div>
+            <div class="card-body">
+                <div id="chat-container" class="chat-container">
+                    <!-- Chat messages will be dynamically added here -->
+                </div>
+                <div class="mt-3 d-flex">
+                    <input type="text" id="chat-input" class="form-control me-2" placeholder="{{ translations.chatbot_placeholder }}">
+                    <button id="send-message" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Hidden element for translations -->
+        <div id="bot-greeting" class="d-none">{{ translations.chatbot_greeting }}</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

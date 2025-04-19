@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h1>{{ translations.history_title }}</h1>
+        <p class="lead">{{ translations.history_subtitle }}</p>
+    </div>
+    
+    {% if detections %}
+    <div class="row">
+        {% for detection in detections %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card history-card h-100">
+                <img src="data:image/jpeg;base64,{{ detection.image_data }}" alt="Plant Image" class="card-img-top history-image">
+                <div class="card-body">
+                    <h5 class="card-title">{{ detection.disease_name }}</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>
+                            {{ translations.confidence }}: {{ "%.1f"|format(detection.confidence*100) }}%
+                        </span>
+                        <span>
+                            {{ translations.severity }}: 
+                            {% if detection.severity == 'low' %}
+                            <span class="badge bg-success">{{ translations.severity_low }}</span>
+                            {% elif detection.severity == 'medium' %}
+                            <span class="badge bg-warning">{{ translations.severity_medium }}</span>
+                            {% elif detection.severity == 'high' %}
+                            <span class="badge bg-danger">{{ translations.severity_high }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <p class="card-text text-truncate">{{ detection.description }}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">{{ translations.detection_date }}: {{ detection.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>{{ translations.no_history }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
