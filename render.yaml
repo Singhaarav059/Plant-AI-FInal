@@ -11,8 +11,6 @@ services:
         generateValue: true
       - key: GEMINI_API_KEY
         sync: false
-      - key: OPENAI_API_KEY
-        sync: false
       - key: DATABASE_URL
         fromDatabase:
           name: krishisahayak-db

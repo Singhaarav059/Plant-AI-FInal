@@ -2,20 +2,21 @@ import os
 import json
 import base64
 import logging
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from PIL import Image
 import io
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Initialize Gemini
+# Initialize Gemini via Vertex AI (Express Mode - API key, no service account needed)
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
+client = genai.Client(vertexai=True, api_key=GEMINI_API_KEY)
 
 # Models - using latest Gemini model names
-TEXT_MODEL = "gemini-1.5-flash"  # For text-based chatbot interactions
-VISION_MODEL = "gemini-1.5-flash"  # For image and text analysis (unified model)
+TEXT_MODEL = "gemini-2.5-flash"  # For text-based chatbot interactions
+VISION_MODEL = "gemini-2.5-flash"  # For image and text analysis (unified model)
 
 def analyze_plant_image(image_base64, language='en'):
     """
@@ -32,10 +33,7 @@ def analyze_plant_image(image_base64, language='en'):
         # Decode base64 image
         image_data = base64.b64decode(image_base64)
         image = Image.open(io.BytesIO(image_data))
-        
-        # Create Gemini model instance
-        model = genai.GenerativeModel(VISION_MODEL)
-        
+
         # Map language codes to specific prompts in each language
         language_prompts = {
             'en': {
@@ -139,30 +137,19 @@ def analyze_plant_image(image_base64, language='en'):
         
         # Configure safety settings to allow content generation
         safety_settings = [
-            {
-                "category": "HARM_CATEGORY_HARASSMENT",
-                "threshold": "BLOCK_NONE"
-            },
-            {
-                "category": "HARM_CATEGORY_HATE_SPEECH",
-                "threshold": "BLOCK_NONE"
-            },
-            {
-                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                "threshold": "BLOCK_NONE"
-            },
-            {
-                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                "threshold": "BLOCK_NONE"
-            }
+            types.SafetySetting(category="HARM_CATEGORY_HARASSMENT", threshold="BLOCK_NONE"),
+            types.SafetySetting(category="HARM_CATEGORY_HATE_SPEECH", threshold="BLOCK_NONE"),
+            types.SafetySetting(category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="BLOCK_NONE"),
+            types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_NONE"),
         ]
-        
+
         # Generate response with safety settings
-        response = model.generate_content(
+        response = client.models.generate_content(
+            model=VISION_MODEL,
             contents=[prompt, image],
-            safety_settings=safety_settings
+            config=types.GenerateContentConfig(safety_settings=safety_settings)
         )
-        
+
         # Process the response
         response_text = response.text
         
@@ -210,9 +197,6 @@ def get_chatbot_response(question, language='en'):
         String response from the chatbot
     """
     try:
-        # Create Gemini model instance
-        model = genai.GenerativeModel(TEXT_MODEL)
-        
         # Map language codes to specific prompts in each language
         language_prompts = {
             'en': {
@@ -259,30 +243,19 @@ def get_chatbot_response(question, language='en'):
         
         # Configure safety settings to allow more flexible content
         safety_settings = [
-            {
-                "category": "HARM_CATEGORY_HARASSMENT",
-                "threshold": "BLOCK_NONE"
-            },
-            {
-                "category": "HARM_CATEGORY_HATE_SPEECH",
-                "threshold": "BLOCK_NONE"
-            },
-            {
-                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                "threshold": "BLOCK_NONE"
-            },
-            {
-                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                "threshold": "BLOCK_NONE"
-            }
+            types.SafetySetting(category="HARM_CATEGORY_HARASSMENT", threshold="BLOCK_NONE"),
+            types.SafetySetting(category="HARM_CATEGORY_HATE_SPEECH", threshold="BLOCK_NONE"),
+            types.SafetySetting(category="HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold="BLOCK_NONE"),
+            types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_NONE"),
         ]
-        
+
         # Generate response with safety settings
-        response = model.generate_content(
+        response = client.models.generate_content(
+            model=TEXT_MODEL,
             contents=combined_prompt,
-            safety_settings=safety_settings
+            config=types.GenerateContentConfig(safety_settings=safety_settings)
         )
-        
+
         return response.text
         
     except Exception as e:

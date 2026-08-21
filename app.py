@@ -1,4 +1,8 @@
 from dotenv import load_dotenv
+
+# Load environment variables from .env file before any module that reads them at import time
+load_dotenv()
+
 import os
 import logging
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
@@ -12,9 +16,6 @@ from translations import get_translations
 from chatbot import get_response
 import uuid
 import json
-
-# Load environment variables from .env file
-load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -65,7 +66,7 @@ forum_storage = {'posts': [], 'comments': {}}
 # Removed Gemini API configuration to revert to previous working state
 
 import os
-from ml_model import load_model, preprocess_image, predict_disease
+from ml_model import preprocess_image, predict_disease
 
 # Removed genai import and configuration to revert to previous working state
 

@@ -17,7 +17,7 @@ A comprehensive multilingual plant disease detection platform designed specifica
 ## Technologies Used
 
 - **Backend**: Python, Flask, SQLAlchemy
-- **AI/ML**: Google Gemini AI (with OpenAI fallback)
+- **AI/ML**: Google Gemini via Vertex AI (Express Mode)
 - **Database**: PostgreSQL
 - **Frontend**: HTML, CSS, JavaScript, Bootstrap 5
 - **Authentication**: Flask-Login
@@ -33,9 +33,8 @@ A comprehensive multilingual plant disease detection platform designed specifica
    flask==3.0.2
    flask-login==0.6.3
    flask-sqlalchemy==3.1.1
-   google-generativeai==0.4.0
+   google-genai>=1.0.0
    gunicorn==23.0.0
-   openai==1.14.1
    pillow==10.2.0
    psycopg2-binary==2.9.9
    sqlalchemy==2.0.25
@@ -53,8 +52,7 @@ A comprehensive multilingual plant disease detection platform designed specifica
 4. Connect your GitHub repository
 5. Render will detect the `render.yaml` configuration
 6. Set up the required environment variables in the Render dashboard:
-   - `GEMINI_API_KEY` - Your Google Gemini API key
-   - `OPENAI_API_KEY` - Your OpenAI API key (optional fallback)
+   - `GEMINI_API_KEY` - Your Vertex AI API key (Express Mode)
    - `SESSION_SECRET` - A secret key for session management
 7. Click "Apply" to deploy the application with a PostgreSQL database
 8. Render will automatically build and deploy your application
