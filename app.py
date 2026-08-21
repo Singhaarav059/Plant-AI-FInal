@@ -74,6 +74,18 @@ from ml_model import preprocess_image, predict_disease
 with app.app_context():
     db.create_all()
     
+@app.context_processor
+def inject_asset_version():
+    """Cache-bust static assets using their file mtime, so a deploy is never
+    masked by a browser serving a stale cached copy of main.js/custom.css."""
+    def asset_version(filename):
+        path = os.path.join(app.static_folder, filename)
+        try:
+            return int(os.path.getmtime(path))
+        except OSError:
+            return 0
+    return dict(asset_version=asset_version)
+
 # Languages supported by the application
 LANGUAGES = {
     'en': 'English',

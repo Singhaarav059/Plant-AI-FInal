@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Full-screen loading overlay shown while an uploaded photo is being analyzed -->
+<div id="analyzing-overlay" class="analyzing-overlay d-none">
+    <div class="analyzing-overlay-content">
+        <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+        <p class="mb-1 fs-5" id="analyzing-overlay-text">{{ translations.analyzing }}</p>
+        <p class="text-secondary small mb-0">{{ translations.analyzing_hint }}</p>
+    </div>
+</div>
+
 <div class="row justify-content-center mb-5">
     <div class="col-md-10 text-center">
         <h1 class="display-4 mb-3">{{ translations.welcome_message }}</h1>
@@ -109,5 +118,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}?v={{ asset_version('js/chatbot.js') }}"></script>
 {% endblock %}

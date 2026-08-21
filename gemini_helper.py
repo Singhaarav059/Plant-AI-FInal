@@ -2,6 +2,7 @@ import os
 import json
 import base64
 import logging
+import httpx
 from google import genai
 from google.genai import types
 from PIL import Image
@@ -10,9 +11,19 @@ import io
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Initialize Gemini via Vertex AI (Express Mode - API key, no service account needed)
+# Initialize Gemini via Vertex AI (Express Mode - API key, no service account needed).
+# local_address="0.0.0.0" forces httpx to connect over IPv4: on networks where IPv6
+# routing to Google is present but broken, httpx (unlike curl) doesn't fall back
+# quickly, and every request hangs for the full OS connect timeout (~85s) before
+# retrying over IPv4. This was the actual cause of "slow" analysis, not the model.
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(vertexai=True, api_key=GEMINI_API_KEY)
+client = genai.Client(
+    vertexai=True,
+    api_key=GEMINI_API_KEY,
+    http_options=types.HttpOptions(
+        client_args={'transport': httpx.HTTPTransport(local_address='0.0.0.0')}
+    )
+)
 
 # Models - using latest Gemini model names
 TEXT_MODEL = "gemini-2.5-flash"  # For text-based chatbot interactions
@@ -143,11 +154,16 @@ def analyze_plant_image(image_base64, language='en'):
             types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_NONE"),
         ]
 
-        # Generate response with safety settings
+        # Generate response with safety settings. Thinking is disabled - this is a
+        # straightforward classification task, and thinking tokens are the main
+        # source of latency on gemini-2.5-flash.
         response = client.models.generate_content(
             model=VISION_MODEL,
             contents=[prompt, image],
-            config=types.GenerateContentConfig(safety_settings=safety_settings)
+            config=types.GenerateContentConfig(
+                safety_settings=safety_settings,
+                thinking_config=types.ThinkingConfig(thinking_budget=0)
+            )
         )
 
         # Process the response
@@ -249,11 +265,14 @@ def get_chatbot_response(question, language='en'):
             types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_NONE"),
         ]
 
-        # Generate response with safety settings
+        # Generate response with safety settings, thinking disabled for latency (see analyze_plant_image)
         response = client.models.generate_content(
             model=TEXT_MODEL,
             contents=combined_prompt,
-            config=types.GenerateContentConfig(safety_settings=safety_settings)
+            config=types.GenerateContentConfig(
+                safety_settings=safety_settings,
+                thinking_config=types.ThinkingConfig(thinking_budget=0)
+            )
         )
 
         return response.text

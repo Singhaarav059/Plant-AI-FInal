@@ -26,9 +26,13 @@ def preprocess_image(image_data):
         if img.mode != 'RGB':
             img = img.convert('RGB')
 
+        # Downscale large phone photos - disease features are visible well under
+        # 1024px, and a smaller payload uploads and processes much faster.
+        img.thumbnail((1024, 1024), Image.LANCZOS)
+
         # Re-encode as JPEG to standardize format
         img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format='JPEG')
+        img.save(img_byte_arr, format='JPEG', quality=85)
         img_byte_arr = img_byte_arr.getvalue()
 
         # Convert to base64

@@ -85,6 +85,10 @@ function initImageUpload() {
         const label = submitBtn.querySelector('.btn-label');
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
             (submitBtn.dataset.analyzingText || (label ? label.textContent : 'Analyzing...'));
+
+        // Full-screen overlay - impossible to miss even if the button scrolls out of view
+        const overlay = document.getElementById('analyzing-overlay');
+        if (overlay) overlay.classList.remove('d-none');
     });
 
     // Handle drag and drop
