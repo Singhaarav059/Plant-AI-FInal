@@ -2,11 +2,11 @@ services:
   - type: web
     name: krishisahayak
     env: python
-    buildCommand: pip install -r requirements-render.txt
+    buildCommand: pip install -r requirements.txt psycopg2-binary>=2.9.10
     startCommand: gunicorn main:app --bind 0.0.0.0:$PORT --workers 1
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.1
+        value: 3.13.14
       - key: SESSION_SECRET
         generateValue: true
       - key: GEMINI_API_KEY
