@@ -4,12 +4,39 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize file upload preview
     initImageUpload();
-    
+
     // Initialize chatbot if chat container exists
     if (document.getElementById('chat-container')) {
         initChatbot();
     }
+
+    initNavbarScrollShadow();
+    initAutoDismissAlerts();
 });
+
+/**
+ * Add a shadow to the navbar once the page is scrolled, for a bit of depth
+ */
+function initNavbarScrollShadow() {
+    const navbar = document.querySelector('.navbar');
+    if (!navbar) return;
+
+    const updateShadow = () => navbar.classList.toggle('navbar-scrolled', window.scrollY > 10);
+    updateShadow();
+    window.addEventListener('scroll', updateShadow, { passive: true });
+}
+
+/**
+ * Auto-dismiss flash message alerts after a few seconds
+ */
+function initAutoDismissAlerts() {
+    document.querySelectorAll('.alert-dismissible').forEach(function(alertEl) {
+        setTimeout(function() {
+            const closeBtn = alertEl.querySelector('.btn-close');
+            if (closeBtn) closeBtn.click();
+        }, 6000);
+    });
+}
 
 /**
  * Initialize image upload functionality
@@ -49,7 +76,17 @@ function initImageUpload() {
             reader.readAsDataURL(file);
         }
     });
-    
+
+    // Show a loading state on submit so a multi-second analysis doesn't look stuck
+    uploadForm.addEventListener('submit', function() {
+        const submitBtn = uploadForm.querySelector('button[type="submit"]');
+        if (submitBtn.disabled) return;
+        submitBtn.disabled = true;
+        const label = submitBtn.querySelector('.btn-label');
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
+            (submitBtn.dataset.analyzingText || (label ? label.textContent : 'Analyzing...'));
+    });
+
     // Handle drag and drop
     if (uploadArea) {
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {

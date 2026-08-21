@@ -224,6 +224,36 @@ def login():
     
     return render_template('login.html', translations=translations, languages=LANGUAGES)
 
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    """Reset a password by verifying username + email match (no email step, kept simple)"""
+    lang = session.get('language', 'en')
+    translations = get_translations(lang)
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        if new_password != confirm_password:
+            flash(translations['passwords_no_match'], 'error')
+            return redirect(url_for('forgot_password'))
+
+        from models import User
+        user = User.query.filter_by(username=username, email=email).first()
+
+        if not user:
+            flash(translations['user_not_found'], 'error')
+            return redirect(url_for('forgot_password'))
+
+        user.password_hash = generate_password_hash(new_password)
+        db.session.commit()
+        flash(translations['password_reset_success'], 'success')
+        return redirect(url_for('login'))
+
+    return render_template('forgot_password.html', translations=translations, languages=LANGUAGES)
+
 @app.route('/logout')
 def logout():
     """User logout"""
